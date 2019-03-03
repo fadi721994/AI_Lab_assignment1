@@ -75,8 +75,8 @@ def calculate_blocking_cars(board, count_blocked=True):
                 assert 0
             if count_blocked:
                 is_blocked = is_blocking_car_blocked(board.matrix, car)
-                if is_blocked:
-                    blocking_cars = blocking_cars + 1
+                # if is_blocked:
+                #     blocking_cars = blocking_cars + 1
             blocking_cars = blocking_cars + 1
     return blocking_cars
 
@@ -86,8 +86,8 @@ def calculate_blocking_cars(board, count_blocked=True):
 def calculate_g(board):
     exit_dist = calculate_exit_distance(board)
     blocking_cars_points = calculate_blocking_cars(board)
-    return exit_dist + blocking_cars_points
-
+    #return exit_dist + blocking_cars_points
+    return blocking_cars_points
 
 def calculate_f(board, cost):
     return cost + calculate_g(board)
@@ -95,14 +95,17 @@ def calculate_f(board, cost):
 
 def select_min_state(open_list):
     minimum = open_list[0][1]
-    min_index = 0
+    min_list = []
     for i, entry in enumerate(open_list):
-        if goal_state(entry[0]):
-            return open_list[i]
         if entry[1] < minimum:
             minimum = entry[1]
-            min_index = i
-    return open_list[min_index]
+    for entry in open_list:
+        if entry[1] == minimum:
+            min_list.append(entry)
+    for entry in min_list:
+        if goal_state(entry[0]):
+            return entry
+    return min_list[0]
 
 
 def update_lists(list_entry, open_list, closed_list):

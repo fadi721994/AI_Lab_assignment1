@@ -18,10 +18,13 @@ def main():
             val = validate_solution(list_of_solutions[i], solution)
             if val == 1:
                 too_opt = too_opt + 1
+                print("Too optimal")
             elif val == 0:
                 opt = opt + 1
+                print("Optimal")
             elif val == -1:
                 not_opt = not_opt + 1
+                print("Not optimal")
             print(solution)
     print("Too optimal: " + str(too_opt))
     print("Optimal: " + str(opt))
