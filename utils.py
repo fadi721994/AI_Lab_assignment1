@@ -4,6 +4,10 @@ from direction import Direction
 import copy
 
 
+DEPTHS = []
+
+
+# Read the boards from rh.txt file and provide a list of object "board"
 def parse_list_of_boards(file="rh.txt"):
     list_of_boards = []
     with open(file, 'r') as f:
@@ -16,6 +20,7 @@ def parse_list_of_boards(file="rh.txt"):
     return list_of_boards
 
 
+# Return the distance of the red car from the exit.
 def calculate_exit_distance(board):
     exit_row = board.matrix[2]
     distance = 0
@@ -28,6 +33,7 @@ def calculate_exit_distance(board):
     return distance
 
 
+# Print the board in a nicer way
 def prettify_print(board):
     print("++++++++")
     for i, row in enumerate(board):
@@ -41,6 +47,7 @@ def prettify_print(board):
     print("++++++++")
 
 
+# Given a car name and a list of cars, return the relevant car object
 def get_car_by_name(name, cars):
     for car in cars:
         if name.lower() == car.name.lower():
@@ -48,6 +55,7 @@ def get_car_by_name(name, cars):
     return None
 
 
+# Checks if car blocking X, is also blocked.
 def is_blocking_car_blocked(board, car):
     if car.size == 3:
         for x, row in enumerate(board[3:]):
@@ -62,6 +70,7 @@ def is_blocking_car_blocked(board, car):
     return False
 
 
+# Returns the number of cars blocking X if count_blocked is false, if true, returns an extra point for each blocked car
 def calculate_blocking_cars(board, count_blocked=True):
     exit_row = board.matrix[2]
     blocking_cars = 0
@@ -81,13 +90,11 @@ def calculate_blocking_cars(board, count_blocked=True):
     return blocking_cars
 
 
-# G is the distance of the red car from the exit + the number of blocking cars
-# Note if a car is blocking, and it is blocked too, we add 2 points.
+# G is the number of blocking cars
 def calculate_g(board):
-    exit_dist = calculate_exit_distance(board)
     blocking_cars_points = calculate_blocking_cars(board)
-    #return exit_dist + blocking_cars_points
     return blocking_cars_points
+
 
 def calculate_f(board, cost):
     return cost + calculate_g(board)
@@ -201,7 +208,7 @@ def create_expansion(state, step):
     return new_state
 
 
-def expand_state(state, cost):
+def expand_state(state, cost, depth):
     list_of_expansions = []
     for car in state.cars:
         if can_car_move(car, state.matrix):
@@ -209,7 +216,7 @@ def expand_state(state, cost):
             for step in valid_steps:
                 expanded_state = create_expansion(state, step)
                 f = calculate_f(expanded_state, cost + step[2])
-                list_of_expansions.append((expanded_state, f, state, step, cost + step[2]))
+                list_of_expansions.append((expanded_state, f, state, step, cost + step[2], depth + 1))
     return list_of_expansions
 
 
@@ -223,16 +230,17 @@ def is_expansion_in_lists(expansion, open_list, closed_list):
     return False
 
 
-def find_path(list_entry, closed_list, steps, done):
+def find_path(list_entry, closed_list, steps, done, depth=1):
     for entry in closed_list:
         if list_entry[2] is None:
+            DEPTHS.append(depth)
             done = True
         if done:
             return done
         if list_entry[2].matrix == entry[0].matrix:
             if entry[3] is not None:
                 steps.append(entry[3])
-            done = find_path(entry, closed_list, steps, done)
+            done = find_path(entry, closed_list, steps, done, depth + 1)
     return done
 
 
@@ -259,39 +267,42 @@ def get_path_string(steps, final_state):
 
 
 def solve_board(state):
+    del DEPTHS[:]
     cost = 0
+    max_depth = 0
     f = calculate_f(state, cost)
-    open_list = [(state, f, None, None, cost)]
+    # state, F, prev_state, step, cost, depth
+    open_list = [(state, f, None, None, cost, 1)]
     closed_list = []
-    solved = False
-    while not solved:
+
+    while True:
         if len(open_list) == 0:
             return None
         open_list_entry = select_min_state(open_list)
-        # print(open_list_entry)
-        # prettify_print(open_list_entry[0].matrix)
         update_lists(open_list_entry, open_list, closed_list)
         next_state = open_list_entry[0]
         cost = open_list_entry[4]
+        depth = open_list_entry[5]
         if goal_state(next_state):
             steps = [open_list_entry[3]]
             find_path(open_list_entry, closed_list, steps, False)
             path_str = get_path_string(steps, next_state)
+            print("Max depth is " + str(max_depth))
             return path_str
-        list_of_expansions = expand_state(next_state, cost)
+        list_of_expansions = expand_state(next_state, cost, depth)
         for expansion in list_of_expansions:
             if not is_expansion_in_lists(expansion, open_list, closed_list):
-                # print()
-                # prettify_print(expansion[0].matrix)
+                if depth > max_depth:
+                    max_depth = depth
                 open_list.append(expansion)
 
 
 def count_steps(sol):
-    sum = 0
+    step_sum = 0
     for c in sol:
         if c.isdigit():
-            sum += int(c)
-    return sum
+            step_sum += int(c)
+    return step_sum
 
 
 def validate_solution(real_sol, my_sol):
@@ -310,7 +321,7 @@ def validate_solution(real_sol, my_sol):
 
 def read_solutions():
     solutions = []
-    with open("solutions.txt", 'r') as f:
+    with open("given_solutions.txt", 'r') as f:
         for line in f:
             line = line.strip()
             if not line:
