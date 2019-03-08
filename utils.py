@@ -79,19 +79,10 @@ def expand_state(state):
     return list_of_expansions
 
 
-def is_expansion_in_lists(state, open_list, closed_list):
-    if PriorityQueueNode(0, state) in open_list.queue:
-        return True
-    for entry in closed_list:
-        if state.board.grid == entry.board.grid:
-            return True
-    return False
-
-
 def is_expansion_in_closed_list(state, closed_list):
-    for entry in closed_list:
-        if state.board.grid == entry.board.grid:
-            return True
+    hash_num = hash(grid_to_str(state.board.grid))
+    if hash_num in closed_list:
+        return True
     return False
 
 
@@ -127,10 +118,9 @@ def create_solution_string(steps, final_state):
 
 
 def remove_state(state, closed_list):
-    for entry in closed_list:
-        if state.board.grid == entry.board.grid:
-            closed_list.remove(entry)
-            break
+    hash_num = hash(grid_to_str(state.board.grid))
+    if hash_num in closed_list:
+        closed_list.remove(hash_num)
 
 
 def grid_to_str(grid):
@@ -163,12 +153,13 @@ def solve_board(board, data):
         state = open_list.pop().state
 
         # Step 4: Remove node i from OPEN and place it on a list called CLOSED, of expanded nodes.
-        closed_list.add(state)
+        closed_list.add(hash(grid_to_str(state.board.grid)))
 
         # Step 5: If i is a goal node, exit with success; a solution has been found.
         if state.goal_state():
             solution_steps = get_solution_steps(state)
             solution_str = create_solution_string(solution_steps, state)
+            DATA.finalize()
             return solution_str
 
         # Step 6: Expand node i, creating nodes for all of its successors. For every successor node j of i:
@@ -177,19 +168,20 @@ def solve_board(board, data):
         for expanded_state in expanded_states:
             # Step 6.2: If j is neither in OPEN nor in CLOSED, then add it to OPEN with its f value.
             # Attach a pointer from j back to its predecessor i
-            if not is_expansion_in_lists(expanded_state, open_list, closed_list):
+            if hash(grid_to_str(expanded_state.board.grid)) not in f_values:
                 open_list.push(expanded_state)
+                f_values[hash(grid_to_str(expanded_state.board.grid))] = expanded_state.f_value
             else:
                 # Step 6.3: If j was already on either OPEN or CLOSED, compare the f value just calculated for j with
                 # the value previously associated with the node.
                 if expanded_state.f_value < f_values[hash(grid_to_str(expanded_state.board.grid))]:
+                    f_values[hash(grid_to_str(expanded_state.board.grid))] = expanded_state.f_value
                     # Step 6.3.1: Substitute it for the old value.
                     if is_expansion_in_closed_list(expanded_state, closed_list):
                         # Step 6.3.2: Point j back to i instead of to its previously found predecessor.
                         # Step 6.3.3: If node j was on the CLOSED list, move it back to OPEN
                         open_list.push(expanded_state)
                         remove_state(expanded_state, closed_list)
-            f_values[hash(grid_to_str(expanded_state.board.grid))] = expanded_state.f_value
     return None
 
 

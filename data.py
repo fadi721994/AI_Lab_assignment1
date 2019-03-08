@@ -24,3 +24,10 @@ class Data:
 
     def get_ebf(self):
         return self.scanned_nodes ** (1 / self.solution_depth)
+
+    def finalize(self):
+        self.end_time = time.time()
+        self.run_time = self.end_time - self.start_time
+        print("Grid " + str(self.board_num + 1))
+        print("Time to solve is: " + str(round(self.run_time, 3)))
+
