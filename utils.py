@@ -2,7 +2,6 @@ from board import Board
 from direction import Direction
 from state import State
 from priority_queue import PriorityQueue
-from priority_queue_node import PriorityQueueNode
 import copy
 
 
@@ -52,7 +51,7 @@ def prettify_print(board):
 def create_expansion(state, step):
     global DATA
     board = copy.deepcopy(state.board)
-    new_state = State(board, state, step, 0, state.steps + step.amount)
+    new_state = State(board, state, step, 0, state.steps + step.amount, state.depth + 1)
     car = new_state.board.get_car_by_name(step.car_name)
     if step.direction == Direction.RIGHT:
         car.y = car.y + step.amount
@@ -138,7 +137,7 @@ def solve_board(board, data):
     f_values = dict()
     f = board.calculate_f(steps, DATA)
     f_values[hash(grid_to_str(board.grid))] = f
-    first_state = State(board, None, None, f, steps)
+    first_state = State(board, None, None, f, steps, 0)
 
     open_list = PriorityQueue()
     closed_list = set()
@@ -153,13 +152,14 @@ def solve_board(board, data):
         state = open_list.pop().state
 
         # Step 4: Remove node i from OPEN and place it on a list called CLOSED, of expanded nodes.
+        DATA.scanned_nodes = DATA.scanned_nodes + 1
         closed_list.add(hash(grid_to_str(state.board.grid)))
 
         # Step 5: If i is a goal node, exit with success; a solution has been found.
         if state.goal_state():
             solution_steps = get_solution_steps(state)
             solution_str = create_solution_string(solution_steps, state)
-            DATA.finalize()
+            DATA.finalize(solution_str, len(solution_steps), open_list)
             return solution_str
 
         # Step 6: Expand node i, creating nodes for all of its successors. For every successor node j of i:
@@ -182,6 +182,7 @@ def solve_board(board, data):
                         # Step 6.3.3: If node j was on the CLOSED list, move it back to OPEN
                         open_list.push(expanded_state)
                         remove_state(expanded_state, closed_list)
+    DATA.finalize("FAILED", 0)
     return None
 
 

@@ -3,12 +3,13 @@ from direction import Direction
 
 
 class State:
-    def __init__(self, board, prev_state, step_taken, f_value, steps):
+    def __init__(self, board, prev_state, step_taken, f_value, steps, depth):
         self.board = board
         self.f_value = f_value
         self.prev_state = prev_state
         self.steps = steps
         self.step_taken = step_taken
+        self.depth = depth
 
     def goal_state(self):
         blocking_cars = self.board.calculate_blocking_cars()
