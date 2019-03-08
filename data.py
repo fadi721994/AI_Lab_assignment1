@@ -66,9 +66,9 @@ class Data:
             file.write("Run time: " + str(self.run_time) + "\n")
             file.write("Heuristic function average: " + str(self.heuristic_avg) + "\n")
             file.write("EBF: " + str(ebf) + "\n")
-            file.write("Minimum tree depth: " + str(self.min_depth) + "\n")
-            file.write("Average tree depth: " + str(self.avg_depth) + "\n")
-            file.write("Maximum tree depth: " + str(self.max_depth) + "\n")
+            file.write("Minimum tree depth: " + str(self.min_depth + 1) + "\n")
+            file.write("Average tree depth: " + str(self.avg_depth + 1) + "\n")
+            file.write("Maximum tree depth: " + str(self.max_depth + 1) + "\n")
 
     def add_optimality(self, solution, suggested_solution):
         opt_str = ''
