@@ -23,6 +23,7 @@ class Data:
         self.time_limit = time_limit
         self.optimal = 0
 
+    # Given the open list, find the tree depths data, minimum, maximum and average.
     def find_tree_depth_data(self, open_list):
         for entry in open_list.queue:
             state = entry.state
@@ -37,6 +38,7 @@ class Data:
     def get_ebf(self):
         return self.scanned_nodes ** (1 / self.solution_depth)
 
+    # Finalize the data and write to the output files.
     def finalize(self, solution, sol_depth, open_list):
         self.end_time = time.time()
         self.run_time = self.end_time - self.start_time
@@ -70,6 +72,7 @@ class Data:
             file.write("Average tree depth: " + str(self.avg_depth + 1) + "\n")
             file.write("Maximum tree depth: " + str(self.max_depth + 1) + "\n")
 
+    # Append to the data detailed output file whether the solution is optimal or not.
     def add_optimality(self, solution, suggested_solution):
         opt_str = ''
         if solution is None:

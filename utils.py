@@ -34,6 +34,7 @@ def calculate_exit_distance(state):
     return distance
 
 
+# Create expansion for a state, given a step.
 def create_expansion(state, step):
     global DATA
     board = copy.deepcopy(state.board)
@@ -53,6 +54,7 @@ def create_expansion(state, step):
     return new_state
 
 
+# Expand a state, and return a list of all the possible states that can be reached from the state.
 def expand_state(state):
     list_of_expansions = []
     for car in state.board.cars:
@@ -64,6 +66,7 @@ def expand_state(state):
     return list_of_expansions
 
 
+# Check if a state exists in the closed list.
 def is_expansion_in_closed_list(state, closed_list):
     hash_num = hash(grid_to_str(state.board.grid))
     if hash_num in closed_list:
@@ -71,6 +74,7 @@ def is_expansion_in_closed_list(state, closed_list):
     return False
 
 
+# Give a state, find the path to the beginning state.
 def get_solution_steps(state):
     steps = [state.step_taken]
     while state.prev_state is not None:
@@ -79,6 +83,7 @@ def get_solution_steps(state):
     return steps
 
 
+# Given steps list, create the string that should be printed to the output file.
 def create_solution_string(steps, final_state):
     steps = list(reversed(steps))
     solution_str = ''
@@ -102,12 +107,14 @@ def create_solution_string(steps, final_state):
     return solution_str.strip()
 
 
+# Remove state from the closed list.
 def remove_state(state, closed_list):
     hash_num = hash(grid_to_str(state.board.grid))
     if hash_num in closed_list:
         closed_list.remove(hash_num)
 
 
+# Change a grid to a string in order to hash the string.
 def grid_to_str(grid):
     grid_line = ''
     for line in grid:
@@ -116,6 +123,7 @@ def grid_to_str(grid):
     return grid_line
 
 
+# The main function. Used to solve the board.
 def solve_board(board, data):
     global DATA
     DATA = data
@@ -172,6 +180,7 @@ def solve_board(board, data):
     return None
 
 
+# Count the steps of a solution.
 def count_steps(sol):
     step_sum = 0
     for c in sol:
@@ -180,6 +189,7 @@ def count_steps(sol):
     return step_sum
 
 
+# Check if a solution is optimal. 1 means optimal, 0 means same as suggested, -1 means not optimal.
 def validate_solution(real_sol, my_sol):
     real_steps = count_steps(real_sol)
     my_steps = count_steps(my_sol)
@@ -190,7 +200,7 @@ def validate_solution(real_sol, my_sol):
     else:
         return 0
 
-
+# Read suggested solutions.
 def read_solutions():
     solutions = []
     with open("given_solutions.txt", 'r') as f:
@@ -202,5 +212,6 @@ def read_solutions():
     return solutions
 
 
+# Calculate average of a list.
 def calc_avg(data_list):
     return str(sum(data_list)/len(data_list))

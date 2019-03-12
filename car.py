@@ -9,6 +9,9 @@ class Car:
         self.size = size
         self.orientation = orientation
 
+    # Return a list of steps that a car can take is a specific direction.
+    # Here, we mapped every direction problem to checking if a car can move to the right.
+    # We did so by reversing the rows for LEFT, transpose the matrix for UP, reverse transpose for DOWN.
     def find_direction_steps(self, board_row, direction, steps):
         count = False
         i = 1

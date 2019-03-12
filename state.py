@@ -11,6 +11,7 @@ class State:
         self.step_taken = step_taken
         self.depth = depth
 
+    # Check if a state is a goal state.
     def goal_state(self):
         blocking_cars = self.board.calculate_blocking_cars()
         # Check if goal state

@@ -15,6 +15,7 @@ class OverallData:
         self.avg_tree_depth = []
         self.heuristic = None
 
+    # Add data for all the relevant fields from the run.
     def add_data(self, data):
         self.solution_depth.append(data.solution_depth)
         self.scanned_nodes.append(data.scanned_nodes)
@@ -27,6 +28,7 @@ class OverallData:
         self.avg_tree_depth.append(data.avg_depth)
         self.heuristic = data.heuristic
 
+    # Add the overall heuristic run averages to the details output files.
     def print_avgs(self):
         if self.heuristic == Heuristic.BLOCKING_CARS:
             h_file = 'h1'

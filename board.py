@@ -14,6 +14,7 @@ class Board:
         self.create_cars()
         self.build_grid(width, height)
 
+    # Read the grid lines and create car objects and add them to list.
     def create_cars(self):
         assert(len(self.grid) == 6)
         for row_num, row in enumerate(self.grid):
@@ -47,12 +48,14 @@ class Board:
                     car = Car(name, x, y, size, orientation)
                     self.cars.append(car)
 
+    # Check if a car exists on the board using its name
     def car_name_exists(self, name):
         for car in self.cars:
             if name == car.name:
                 return True
         return False
 
+    # Build the grid using where the cars are placed.
     def build_grid(self, width=6, height=6):
         self.grid = []
         for i in range(width):
@@ -68,12 +71,14 @@ class Board:
                 for i in range(car.size):
                     self.grid[car.x + i][car.y] = car.name
 
+    # Return a car object when queried with a car name
     def get_car_by_name(self, car_name):
         for car in self.cars:
             if car_name.lower() == car.name.lower():
                 return car
         return None
 
+    # Calculate the number of cars blocking X. If count_blocked is True, we add 1 for each blocking car that is blocked.
     def calculate_blocking_cars(self, count_blocked=False):
         exit_row = self.grid[2]
         blocking_cars = 0
@@ -92,6 +97,7 @@ class Board:
                 blocking_cars = blocking_cars + 1
         return blocking_cars
 
+    # Check if a car that is blocking X, is also blocked.
     def is_blocking_car_blocked(self, car):
         if car.size == 3:
             for x, row in enumerate(self.grid[3:]):
@@ -105,15 +111,19 @@ class Board:
                 return True
         return False
 
+    # Calculate the heuristic function and return its value.
+    # Parameter "calc_blocked_blocking", if true, we add 1 for each X-blocking car that is also blocked.
     def calculate_h(self, calc_blocked_blocking):
         blocking_cars_points = self.calculate_blocking_cars(calc_blocked_blocking)
         return blocking_cars_points
 
+    # Calculate the f function.
     def calculate_f(self, steps, data):
         h_value = self.calculate_h(data.heuristic == Heuristic.BLOCKED_BLOCKING_CARS)
         data.heuristic_values.append(h_value)
         return steps + h_value
 
+    # Check if a car can move.
     def can_car_move(self, car):
         x = car.x
         y = car.y
@@ -139,6 +149,7 @@ class Board:
                     return False
         return True
 
+    # Given a car object, return a list of all the possible steps it can take. A step is an object.
     def find_car_valid_steps(self, car):
         steps = []
         x = car.x
