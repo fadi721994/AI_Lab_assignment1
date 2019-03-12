@@ -4,14 +4,13 @@ from heuristic import Heuristic
 from overall_data import OverallData
 import sys
 import os
-import math
 
 
 def get_time_limit():
     if len(sys.argv) >= 2:
         time_limit = float(sys.argv[1])
     else:
-        time_limit = 23
+        time_limit = 25
     return time_limit
 
 
