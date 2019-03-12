@@ -9,14 +9,14 @@ DATA = None
 
 
 # Read the boards from rh.txt file and provide a list of object "board"
-def parse_list_of_boards(file="rh.txt"):
+def parse_list_of_boards(file="./rh.txt"):
     list_of_boards = []
     with open(file, 'r') as f:
-        for i, line in enumerate(f):
+        for line in f:
             line = line.strip()
             if not line:
                 continue
-            board = Board(line, i)
+            board = Board(line)
             list_of_boards.append(board)
     return list_of_boards
 
@@ -32,20 +32,6 @@ def calculate_exit_distance(state):
         if count and col != "X":
             distance = distance + 1
     return distance
-
-
-# Print the board in a nicer way
-def prettify_print(board):
-    print("++++++++")
-    for i, row in enumerate(board):
-        line = "+"
-        for col in row:
-            line = line + col
-        line = line + "+"
-        if i == 2:
-            line = line + "#"
-        print(line)
-    print("++++++++")
 
 
 def create_expansion(state, step):
@@ -182,7 +168,7 @@ def solve_board(board, data):
                         # Step 6.3.3: If node j was on the CLOSED list, move it back to OPEN
                         open_list.push(expanded_state)
                         remove_state(expanded_state, closed_list)
-    DATA.finalize("FAILED", 0)
+    DATA.finalize("FAILED", 0, open_list)
     return None
 
 
@@ -199,13 +185,10 @@ def validate_solution(real_sol, my_sol):
     my_steps = count_steps(my_sol)
     if real_steps > my_steps:
         return 1
-        print("Too optimal. Our steps were " + str(my_steps) + " while solution was " + str(real_steps))
     elif real_steps < my_steps:
         return -1
-        print("Not optimal. Our steps were " + str(my_steps) + " while solution was " + str(real_steps))
     else:
         return 0
-        print("Optimal. Our steps were " + str(my_steps) + " while solution was " + str(real_steps))
 
 
 def read_solutions():
@@ -217,3 +200,7 @@ def read_solutions():
                 continue
             solutions.append(line)
     return solutions
+
+
+def calc_avg(data_list):
+    return str(sum(data_list)/len(data_list))

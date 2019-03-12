@@ -5,7 +5,7 @@ from heuristic import Heuristic
 
 
 class Board:
-    def __init__(self, board_line, i, width=6, height=6):
+    def __init__(self, board_line, width=6, height=6):
         if len(board_line) % width != 0 or len(board_line) / width != height:
             raise Exception("Board input " + board_line + " cannot be split into 6 rows")
         board_line = [board_line[i:i + width] for i in range(0, len(board_line), width)]
@@ -105,12 +105,12 @@ class Board:
                 return True
         return False
 
-    def calculate_g(self, calc_blocked_blocking):
+    def calculate_h(self, calc_blocked_blocking):
         blocking_cars_points = self.calculate_blocking_cars(calc_blocked_blocking)
         return blocking_cars_points
 
     def calculate_f(self, steps, data):
-        h_value = self.calculate_g(data.heuristic == Heuristic.BLOCKED_BLOCKING_CARS)
+        h_value = self.calculate_h(data.heuristic == Heuristic.BLOCKED_BLOCKING_CARS)
         data.heuristic_values.append(h_value)
         return steps + h_value
 

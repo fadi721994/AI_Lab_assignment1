@@ -1,16 +1,17 @@
 from utils import *
 from data import Data
 from heuristic import Heuristic
+from overall_data import OverallData
 import sys
 import os
+import math
 
 
 def get_time_limit():
-    # get parameters
     if len(sys.argv) >= 2:
         time_limit = float(sys.argv[1])
     else:
-        time_limit = 25
+        time_limit = 23
     return time_limit
 
 
@@ -30,12 +31,15 @@ def main():
     list_of_boards = parse_list_of_boards()
     list_of_solutions = read_solutions()
     for j, heuristic in enumerate(heuristics):
+        heuristic_data = OverallData()
         print("Running with heuristic function " + str(j + 1))
         for i, board in enumerate(list_of_boards):
             print("Solving board number " + str(i + 1))
             data = Data(i, heuristic, time_limit)
             solution = solve_board(board, data)
             data.add_optimality(solution, list_of_solutions[i])
+            heuristic_data.add_data(data)
+        heuristic_data.print_avgs()
     print("Finished")
 
 

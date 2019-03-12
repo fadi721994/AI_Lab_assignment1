@@ -75,7 +75,6 @@ class Data:
         if solution is None:
             opt_str = 'Failed to find solution'
         else:
-
             self.optimal = validate_solution(suggested_solution, solution)
             if self.optimal == 1:
                 opt_str = 'Solution has less steps than the suggested solution'
