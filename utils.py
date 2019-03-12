@@ -9,7 +9,7 @@ DATA = None
 
 
 # Read the boards from rh.txt file and provide a list of object "board"
-def parse_list_of_boards(file="./rh.txt"):
+def parse_list_of_boards(file="./problems.txt"):
     list_of_boards = []
     with open(file, 'r') as f:
         for line in f:
